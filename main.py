@@ -21,7 +21,6 @@ window.title("Flash Cards App")
 window.config(padx=50, pady=50, bg=BACKGROUND_COLOR)
 window.minsize(900, 626)
 
-
 #give us the first definition
 canvas = Canvas(width=800, height=526, highlightthickness=0)
 frontCardPic = PhotoImage(file="images/card_front.png")
@@ -32,6 +31,13 @@ defText = canvas.create_text(400, 263, text=DEFINITION, fill="black", font=('Ari
 canvas.config(bg=BACKGROUND_COLOR)
 canvas.grid(column=0,row=0, columnspan=2)
 
+def flipCard():
+    canvas.itemconfig(canvas_image, image=backCardPic)
+    canvas.itemconfig(defText, text=frenchData[INDEX]["English"], fill="white")
+    global TITLE
+    TITLE = "English"
+    canvas.itemconfig(titleText, text=TITLE, fill="white")
+
 def generateNew():
     global INDEX, DEFINITION, TITLE, flip_timer
     window.after_cancel(flip_timer)
@@ -41,25 +47,14 @@ def generateNew():
     canvas.itemconfig(defText, text = DEFINITION, fill="black")
     TITLE = "French"
     canvas.itemconfig(titleText, text = TITLE, fill="black")
-    flip_timer = window.after(3000, generateNew)
+    flip_timer = window.after(3000, flipCard)
 generateNew()
-
-def flipCard():
-    canvas.itemconfig(canvas_image, image=backCardPic)
-    canvas.itemconfig(defText, text=frenchData[INDEX]["English"], fill="white")
-    global TITLE
-    TITLE = "English"
-    canvas.itemconfig(titleText, text=TITLE, fill="white")
 
 def learned():
     frenchData.remove(frenchData[INDEX])
     words = p.DataFrame(frenchData)
     words.to_csv("data/words_to_learn.csv")
     generateNew()
-
-
-
-
 
 wrongBtnImg = PhotoImage(file="images/wrong.png")
 wrongButton = Button(image=wrongBtnImg, highlightthickness=0, command = generateNew)
